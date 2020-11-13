@@ -1,49 +1,45 @@
-import {
-    instagram
-} from "../modules/instagram.js";
+import { instagram } from "./modules/instagram.js";
 
-const postLink = "https://www.instagram.com/p/CB2wqlmqdr2";
+const postLink = "https://www.instagram.com/p/B84AWx8DqBs";
 const profileLink = "https://www.instagram.com/emersoneho";
 
 const getPost = async (link, id) => {
-    let postData = await instagram.getPost(link);
-    let postHTML = document.getElementById(id);
+  let postData = await instagram.getPost(link);
+  let postHTML = document.getElementById(id);
 
-    let pictures = '';
+  let pictures = "";
 
-    await postData.pictures.forEach(post => {
-        pictures += `
+  await postData.pictures.forEach((post) => {
+    pictures += `
                 <img src="${post}" height="100px"
                 alt="">
         `;
-    })
+  });
 
-    let html = `
-        <p>Descrição: ${postData.description}</p>
+  let html = `
         <div> ${pictures}</div>
+        <p>Descrição: ${postData.description}</p>
     `;
 
-    postHTML.innerHTML = html;
-    console.log(postData);
-
-}
+  postHTML.innerHTML = html;
+};
 
 const getProfile = async (link, id) => {
-    let profileData = await instagram.getProfile(link);
-    let profileHTML = document.getElementById(id);
+  let profileData = await instagram.getProfile(link);
+  let profileHTML = document.getElementById(id);
 
-    let pictures = '';
+  let pictures = "";
 
-    await profileData.latestPosts.forEach(post => {
-        pictures += `
+  await profileData.latestPosts.forEach((post) => {
+    pictures += `
             <a href="${post.link}" target="_blank">
                 <img src="${post.picture}" height="100px"
                 alt="">
             </a>
         `;
-    })
+  });
 
-    let html = `
+  let html = `
         <img src="${profileData.pictureHD}" style="width:100px">
         <p>Nome: ${profileData.name}</p>
         <p>Biografia: ${profileData.biography}</p>
@@ -52,13 +48,12 @@ const getProfile = async (link, id) => {
         <div> ${pictures}</div>
     `;
 
-    profileHTML.innerHTML = html;
-}
+  profileHTML.innerHTML = html;
+};
 
-const initialization = async ()=>{
-    await getProfile(profileLink, "instagram-profile");
-    await getPost(postLink, "instagram-post");
-}
-
+const initialization = async () => {
+  await getProfile(profileLink, "instagram-profile");
+  await getPost(postLink, "instagram-post");
+};
 
 initialization();
