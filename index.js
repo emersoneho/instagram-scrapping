@@ -1,27 +1,59 @@
-const getPost = async (postLink) =>{
-    let response = await fetch(postLink);
-    response = await response.text();
+import { instagram } from "./modules/instagram.js";
 
-    let data = response.split("window._sharedData = ")[1].split("<\/script>")[0];
-    data = JSON.parse(data.substr(0, data.length - 1));
+const postLink = "https://www.instagram.com/p/B84AWx8DqBs";
+const profileLink = "https://www.instagram.com/emersoneho";
 
-    let post = formatPost(data);
-    return await post;
+const getPost = async (link, id) => {
+  let postData = await instagram.getPost(link);
+  let postHTML = document.getElementById(id);
+
+  let pictures = "";
+
+  await postData.pictures.forEach((post) => {
+    pictures += `
+                <img src="${post}" height="100px"
+                alt="">
+        `;
+  });
+
+  let html = `
+        <div> ${pictures}</div>
+        <p>Descrição: ${postData.description}</p>
+    `;
+
+  postHTML.innerHTML = html;
 };
 
-const formatPost = async (data) => {
-    let aux = data.entry_data.PostPage[0].graphql;
-    let post = {
-        description: "",
-        pictures: []
-    }
+const getProfile = async (link, id) => {
+  let profileData = await instagram.getProfile(link);
+  let profileHTML = document.getElementById(id);
 
-    post.description = aux.shortcode_media.edge_media_to_caption.edges[0].node.text;
-    post.pictures = aux.shortcode_media.edge_sidecar_to_children.edges.map(a => a.node.display_url);
-    return post;
-}
+  let pictures = "";
 
-getPost("https://www.instagram.com/p/CB2wqlmqdr2/").then(response => {
-    let data = response;
-    console.log(data);
-});
+  await profileData.latestPosts.forEach((post) => {
+    pictures += `
+            <a href="${post.link}" target="_blank">
+                <img src="${post.picture}" height="100px"
+                alt="">
+            </a>
+        `;
+  });
+
+  let html = `
+        <img src="${profileData.pictureHD}" style="width:100px">
+        <p>Nome: ${profileData.name}</p>
+        <p>Biografia: ${profileData.biography}</p>
+        <p>Seguindo: ${profileData.follow}</p>
+        <p>Seguidores: ${profileData.followers}</p>
+        <div> ${pictures}</div>
+    `;
+
+  profileHTML.innerHTML = html;
+};
+
+const initialization = async () => {
+  await getProfile(profileLink, "instagram-profile");
+  await getPost(postLink, "instagram-post");
+};
+
+initialization();
